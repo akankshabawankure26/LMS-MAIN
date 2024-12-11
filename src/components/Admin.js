@@ -102,12 +102,83 @@ const Admin = ({ onLogin }) => {
     }
   };
 
+  const sendOtp = async () => {
+    const otpEmail = localStorage.getItem("otpEmail");  // Retrieve the otpEmail from localStorage
+    
+    if (!otpEmail) {
+        toast({
+            title: "Error",
+            description: "No email found. Please try again.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+        });
+        return;  // Stop execution if otpEmail is not available
+    }
+
+    try {
+        // Send otpEmail in the request body using POST
+        const response = await axios.post("http://localhost/backend_lms/sendOtp.php", {
+            otpEmail: otpEmail  // Sending otpEmail in the request body
+        });
+
+        console.log("Response from backend:", response.data);
+
+        if (response.data.success) {
+            toast({
+                title: "OTP Sent",
+                description: "Check your email for the OTP.",
+                status: "success",
+                duration: 5000,
+                isClosable: true,
+            });
+            const otp = response.data.otp;
+            localStorage.setItem("otp",otp);
+        } else {
+            toast({
+                title: "Error",
+                description: response.data.message || "Failed to send OTP. Try again.",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+            });
+        }
+    } catch (error) {
+        console.error("Error calling backend:", error);
+        toast({
+            title: "Error",
+            description: "An error occurred while sending OTP.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+        });
+    }
+};
+
+
   const handleLogin = async () => {
-    const url = "http://localhost/backend_lms/loginhandler.php";
+
     let fData = new FormData();
     fData.append("email", email);
     fData.append("password", password);
 
+    try {
+      const response = await axios.post("http://localhost/backend_lms/getOtpEmail.php", fData);
+      console.log(response)
+      console.log(response.data);
+      const otpEmail = response.data['otp'];
+      localStorage.setItem("otpEmail", otpEmail);
+      // if (response.data === true) {
+      //   console.log("getting otp");
+      // }
+    }
+    catch (err) {
+      console.log("Error");
+    }
+
+    sendOtp();
+
+    const url = "http://localhost/backend_lms/loginhandler.php";
     try {
       const response = await axios.post(url, fData);
       if (response.data === true) {
@@ -156,46 +227,7 @@ const Admin = ({ onLogin }) => {
     }
   };
 
-  // Handle sending OTP
-  const sendOtp = async () => {
-    console.log("sending otp");
-    try {
-      const response = await axios.post("http://localhost/backend_lsm/sendOtp.php", {
-        email,
-      });
-      console.log(response);
-      console.log(response.data);
-      console.log(response.data.success);
 
-
-      if (response.data.success) {
-        //setIsOtpSent(true);
-        toast({
-          title: "OTP Sent",
-          description: "Check your email for the OTP.",
-          status: "success",
-          duration: 5000,
-          isClosable: true,
-        });
-      } else {
-        toast({
-          title: "Error",
-          description: "Failed to send OTP. Try again.",
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-        });
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "An error occurred while sending OTP.",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-  };
 
   const isMacAuthenticated = localStorage.getItem("MacAuthenticate") === "true";
 
@@ -265,7 +297,6 @@ const Admin = ({ onLogin }) => {
                     onClick={() => {
                       handleLogin();
                       getUserRole();
-                      sendOtp();
                     }}
                   >
                     Log in

@@ -9,16 +9,19 @@ import {
   VStack,
   useToast,
 } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
 
 function OtpPage() {
-  const [otp, setOtp] = useState("");
+  const [enterOtp, setEnterOtp] = useState("");
   const toast = useToast();
-
+  const navigate = useNavigate();
   // Handle verifying OTP
   const verifyOtp = async () => {
+    const otp = localStorage.getItem("otp");
     try {
-      const response = await axios.post("http://localhost/backend_lsm/verifyOtp.php", {
-        otp,
+      const response = await axios.post("http://localhost/backend_lms/verifyOtp.php", {
+        enterOtp,
+        otp    
       });
       
       console.log(response.data);
@@ -30,6 +33,9 @@ function OtpPage() {
           duration: 5000,
           isClosable: true,
         });
+
+        navigate('/');
+
       } else {
         toast({
           title: "Error",
@@ -68,15 +74,15 @@ function OtpPage() {
         <>
           <Input
             placeholder="Enter OTP"
-            value={otp}
-            onChange={(e) => setOtp(e.target.value)}
+            value={enterOtp}
+            onChange={(e) => setEnterOtp(e.target.value)}
             type="text"
             size="md"
           />
           <Button
             colorScheme="green"
             onClick={verifyOtp}
-            isDisabled={!otp.trim()}
+            isDisabled={!enterOtp.trim()}
           >
             Verify OTP
           </Button>

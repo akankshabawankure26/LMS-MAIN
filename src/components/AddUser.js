@@ -63,9 +63,13 @@ const AddUser = () => {
     userAddress: "",
     userCity: "",
     userState: "",
-    userStatus:"active"
+    otpRights: "",
+    otpEmail: "",
+    userStatus: "active"
   });
+
   const passwordMatch = formData.password === formData.confirmPassword;
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
@@ -99,10 +103,16 @@ const AddUser = () => {
     formDataObject.append("userCity", formData.userCity);
     formDataObject.append("userState", formData.userState);
     formDataObject.append("userStatus", formData.userStatus);
+    formDataObject.append("otpRights", formData.otpRights);
+    formDataObject.append("otpEmail", formData.otpEmail);
+console.log(formData);
+
+    console.log(formDataObject);
+    
 
     // Add your logic for making an API request to add the user
     try {
-    
+
       const response = await fetch("http://localhost/backend_lms/adduser.php", {
         method: "POST",
         body: formDataObject,
@@ -131,6 +141,8 @@ const AddUser = () => {
           userAddress: "",
           userCity: "",
           userState: "",
+          otpRights: "",
+          otpEmail: ""
         });
       } else {
         // Handle error, e.g., show an error message
@@ -200,10 +212,10 @@ const AddUser = () => {
               >
                 <option value=" Super Admin">Super Admin</option>
                 <option value="Admin">Admin</option>
+                <option value="Manager">Manager</option>
                 <option value="Buyer">Buyer</option>
                 <option value="Contractor">Contractor</option>
                 <option value="Broker">Broker</option>
-
 
               </Select>
             </FormControl>
@@ -286,6 +298,35 @@ const AddUser = () => {
                 type="text"
                 name="userCity"
                 value={formData.userCity}
+                onChange={handleChange}
+              />
+            </FormControl>
+          </GridItem>
+          <GridItem colSpan={1}>
+            <FormControl isRequired>
+              <FormLabel> OTP Rights (Mandatory)</FormLabel>
+              <Select
+                name="otpRights"
+                value={formData.otpRights}
+                onChange={handleChange}
+                placeholder="Please Select otp Rights"
+              >
+                <option value=" Super Admin">Super Admin</option>
+                <option value="Admin">Admin</option>
+                <option value="Manager">Manager</option>
+                <option value="Buyer">Buyer</option>
+                <option value="Contractor">Contractor</option>
+                <option value="Broker">Broker</option>
+              </Select>
+            </FormControl>
+          </GridItem>
+          <GridItem colSpan={1}>
+            <FormControl>
+              <FormLabel> otp Email ID</FormLabel>
+              <Input
+                type="email"
+                name="otpEmail"
+                value={formData.otpEmail}
                 onChange={handleChange}
               />
             </FormControl>

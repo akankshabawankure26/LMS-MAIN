@@ -92,7 +92,9 @@ const App = () => {
     localStorage.removeItem("startTime");
     localStorage.removeItem("endTime");
     localStorage.removeItem("MacAuthenticate");
-
+    localStorage.removeItem("otp");
+    localStorage.removeItem("otpEmail");
+    localStorage.removeItem("userRight");
     let query = `UPDATE user SET IsActive = '0' WHERE userEmail = '${email}'`;
     const url = "http://localhost/backend_lms/getQuery.php";
     // const url = "http://localhost/backend_lms/getQuery.php";
